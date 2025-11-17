@@ -1,20 +1,32 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-# Set up headless Chrome
-options = Options()
-options.add_argument("--headless=new")  # Headless mode
-options.add_argument("--no-sandbox")  # Required for GitHub Actions
-options.add_argument("--disable-dev-shm-usage")  # Reduce resource usage
+print("🚀 Starting simple headless Selenium test...")
 
-# Create driver
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=options)
+# Chrome options for headless mode
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--window-size=1920,1080")
 
-# Example: Open local Flask app
-driver.get("http://127.0.0.1:5000")  # Flask runs on 127.0.0.1:5000
-print(driver.title)
+# Initialize WebDriver
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-driver.quit()
+try:
+    # Open a static website
+    driver.get("https://example.com")  # This is a simple, stable page
+    print("Page title:", driver.title)
+
+    # Extract header text (h1)
+    header = driver.find_element(By.TAG_NAME, "h1")
+    print("Header text:", header.text)
+
+finally:
+    driver.quit()
+    print("✅ Simple headless test finished.")
+
